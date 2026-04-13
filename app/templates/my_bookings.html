@@ -1,0 +1,79 @@
+<!-- marketplace/templates/my_bookings.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>My Bookings</h2>
+
+    <div class="bookings-section">
+        <h3>My Requests (As Borrower)</h3>
+        {% if my_requests %}
+            <div class="bookings-grid">
+                {% for booking in my_requests %}
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <span class="status-badge {{ booking.status }}">{{ booking.get_status_display }}</span>
+                        <span class="booking-date">{{ booking.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    
+                    <h4>{{ booking.product.title }}</h4>
+                    <p><strong>Owner:</strong> {{ booking.product.owner.username }}</p>
+                    <p><strong>Duration:</strong> {{ booking.start_date|date:"M d" }} - {{ booking.end_date|date:"M d, Y" }}</p>
+                    <p><strong>Total Amount:</strong> ₹{{ booking.total_amount }}</p>
+                    
+                    {% if booking.status == 'accepted' %}
+                        <button class="btn-small btn-primary" 
+                                onclick="location.href='{% url 'complete_booking' booking.id %}'">
+                            Mark as Completed
+                        </button>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-data">You haven't made any booking requests yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="bookings-section">
+        <h3>Received Requests (As Lender)</h3>
+        {% if received_requests %}
+            <div class="bookings-grid">
+                {% for booking in received_requests %}
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <span class="status-badge {{ booking.status }}">{{ booking.get_status_display }}</span>
+                        <span class="booking-date">{{ booking.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    
+                    <h4>{{ booking.product.title }}</h4>
+                    <p><strong>Borrower:</strong> {{ booking.borrower.username }}</p>
+                    <p><strong>Duration:</strong> {{ booking.start_date|date:"M d" }} - {{ booking.end_date|date:"M d, Y" }}</p>
+                    <p><strong>Total Amount:</strong> ₹{{ booking.total_amount }}</p>
+                    
+                    {% if booking.status == 'pending' %}
+                        <div class="booking-actions">
+                            <button class="btn-small btn-primary" 
+                                    onclick="location.href='{% url 'booking_action' booking.id 'accept' %}'">
+                                Accept
+                            </button>
+                            <button class="btn-small btn-danger" 
+                                    onclick="location.href='{% url 'booking_action' booking.id 'reject' %}'">
+                                Reject
+                            </button>
+                        </div>
+                    {% elif booking.status == 'accepted' %}
+                        <button class="btn-small btn-primary" 
+                                onclick="location.href='{% url 'complete_booking' booking.id %}'">
+                            Mark as Completed
+                        </button>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-data">No booking requests received yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}APP{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>&#x1F4BB Loop</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'product_list' %}">Browse</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'create_listing' %}">List Item</a></li>
+                    <li><a href="{% url 'my_listings' %}">My Listings</a></li>
+                    <li><a href="{% url 'my_bookings' %}">My Bookings</a></li>
+                    {% if user.is_staff %}
+                        <li><a href="{% url 'admin_dashboard' %}">Admin</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'logout' %}">Logout ({{ user.username }})</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'register' %}" class="btn-primary">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 app. Borrow locally, build community.</p>
+        </div>
+    </footer>
+</body>
+</html>

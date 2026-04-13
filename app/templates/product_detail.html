@@ -1,0 +1,164 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="product-detail">
+        <div class="product-images">
+            {% if product.image1 %}
+                <img src="{{ product.image1.url }}" alt="{{ product.title }}" class="main-image">
+            {% endif %}
+            <div class="thumbnail-grid">
+                {% if product.image2 %}
+                    <img src="{{ product.image2.url }}" alt="Image 2">
+                {% endif %}
+                {% if product.image3 %}
+                    <img src="{{ product.image3.url }}" alt="Image 3">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="product-details">
+            <span class="category-badge">{{ product.get_category_display }}</span>
+            <h1>{{ product.title }}</h1>
+            
+            <div class="owner-info">
+                <p><strong>Owner:</strong> {{ product.owner.username }}</p>
+                <p><strong>Trust Score:</strong> 
+                    {% if product.owner.userprofile %}
+                        {{ product.owner.userprofile.trust_score }}/100
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="specs">
+                <h3>Specifications</h3>
+                <p><strong>Brand:</strong> {{ product.brand }}</p>
+                <p><strong>Model:</strong> {{ product.model }}</p>
+                <p><strong>Condition:</strong> {{ product.condition }}</p>
+            </div>
+
+            <div class="description">
+                <h3>Description</h3>
+                <p>{{ product.description }}</p>
+            </div>
+
+            <div class="pricing-box">
+                <div class="price-item">
+                    <span>Price per Day</span>
+                    <strong>₹{{ product.price_per_day }}</strong>
+                </div>
+                <div class="price-item">
+                    <span>Security Deposit</span>
+                    <strong>₹{{ product.security_deposit }}</strong>
+                </div>
+                <div class="price-item">
+                    <span>Max Duration</span>
+                    <strong>{{ product.max_lending_days }} days</strong>
+                </div>
+            </div>
+<!-- BOOKING FORM - REPLACE THE OLD STATIC BUTTONS WITH THIS -->
+{% if user.is_authenticated and user != product.owner and product.is_available %}
+    <div class="booking-form">
+        <h3>Request to Borrow</h3>
+        <form method="post" action="{% url 'create_booking' product.id %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Start Date *</label>
+                <input type="date" name="start_date" 
+                       min="{{ today }}" 
+                       required 
+                       class="form-input"
+                       id="start-date">
+            </div>
+
+            <div class="form-group">
+                <label>End Date * (Max {{ product.max_lending_days }} days)</label>
+                <input type="date" name="end_date" 
+                       required 
+                       class="form-input"
+                       id="end-date">
+            </div>
+
+            <div class="total-calculation" id="total-box" style="display: none;">
+                <h4>Cost Breakdown:</h4>
+                <p>Duration: <span id="duration">0</span> days</p>
+                <p>Daily Rate: ₹{{ product.price_per_day }}</p>
+                <p>Rental Cost: ₹<span id="rental-cost">0</span></p>
+                <p>Security Deposit: ₹{{ product.security_deposit }}</p>
+                <p class="total-amount">Total Amount: ₹<span id="total-amount">{{ product.security_deposit }}</span></p>
+            </div>
+
+            <button type="submit" class="btn-large btn-primary">Send Booking Request</button>
+        </form>
+    </div>
+
+    <script>
+        const startDate = document.getElementById('start-date');
+        const endDate = document.getElementById('end-date');
+        const totalBox = document.getElementById('total-box');
+        const pricePerDay = {{ product.price_per_day }};
+        const deposit = {{ product.security_deposit }};
+        const maxDays = {{ product.max_lending_days }};
+
+        function calculateTotal() {
+            if (startDate.value && endDate.value) {
+                const start = new Date(startDate.value);
+                const end = new Date(endDate.value);
+                const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+
+                if (duration > 0) {
+                    if (duration > maxDays) {
+                        alert(`Maximum lending period is ${maxDays} days!`);
+                        endDate.value = '';
+                        totalBox.style.display = 'none';
+                        return;
+                    }
+
+                    const rentalCost = duration * pricePerDay;
+                    const total = rentalCost + deposit;
+
+                    document.getElementById('duration').textContent = duration;
+                    document.getElementById('rental-cost').textContent = rentalCost;
+                    document.getElementById('total-amount').textContent = total;
+                    totalBox.style.display = 'block';
+                } else {
+                    alert('End date must be after start date!');
+                    endDate.value = '';
+                    totalBox.style.display = 'none';
+                }
+            }
+        }
+
+        startDate.addEventListener('change', calculateTotal);
+        endDate.addEventListener('change', calculateTotal);
+
+        const today = new Date().toISOString().split('T')[0];
+        startDate.setAttribute('min', today);
+    </script>
+
+{% elif not user.is_authenticated %}
+    <p class="login-prompt">Please <a href="{% url 'login' %}">login</a> to request this item.</p>
+
+{% elif user == product.owner %}
+    <p class="owner-notice">This is your listing.</p>
+
+{% else %}
+    <p class="unavailable-notice">This item is currently unavailable.</p>
+{% endif %}
+
+            <div class="penalty-notice">
+                <h4>⚠️ Penalty Information</h4>
+                <ul>
+                    <li>Late return: 150% of daily rate per day</li>
+                    <li>Damage: Full replacement cost</li>
+                    <li>Non-return: Legal action via Aadhaar details</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
