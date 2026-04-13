@@ -1,0 +1,70 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h1>Rent What You Need,<br>Share What You Have</h1>
+            <p>Hyperlocal marketplace for cameras and laptops within 2km</p>
+            <div class="hero-buttons">
+                <a href="{% url 'product_list' %}" class="btn-large btn-primary">Browse Items</a>
+                <a href="{% url 'create_listing' %}" class="btn-large btn-secondary">List Your Item</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2>Why LocalLoop?</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📍</div>
+                <h3>Hyperlocal</h3>
+                <p>Only items within 2km radius</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure</h3>
+                <p>Aadhaar verification mandatory</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Quick</h3>
+                <p>Max 7-day lending period</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Negotiate</h3>
+                <p>Chat directly with owners</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="recent-listings">
+    <div class="container">
+        <h2>Recent Listings</h2>
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    {% if product.image1 %}
+                        <img src="{{ product.image1.url }}" alt="{{ product.title }}">
+                    {% else %}
+                        <div class="no-image">No Image</div>
+                    {% endif %}
+                    <div class="product-info">
+                        <span class="category-badge">{{ product.get_category_display }}</span>
+                        <h3>{{ product.title }}</h3>
+                        <p class="price">₹{{ product.price_per_day }}/day</p>
+                        <a href="{% url 'product_detail' product.pk %}" class="btn-small">View Details</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No listings yet. Be the first to list!</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

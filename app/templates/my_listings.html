@@ -1,0 +1,57 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h2>My Listings</h2>
+        <a href="{% url 'create_listing' %}" class="btn-primary">+ Create New Listing</a>
+    </div>
+
+    <div class="listings-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Price/Day</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        {% if product.image1 %}
+                            <img src="{{ product.image1.url }}" alt="{{ product.title }}" class="table-thumbnail">
+                        {% else %}
+                            <div class="table-no-image">No Image</div>
+                        {% endif %}
+                    </td>
+                    <td>{{ product.title }}</td>
+                    <td>{{ product.get_category_display }}</td>
+                    <td>₹{{ product.price_per_day }}</td>
+                    <td>
+                        {% if product.is_available %}
+                            <span class="status-badge available">Available</span>
+                        {% else %}
+                            <span class="status-badge rented">Rented</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'product_detail' product.pk %}" class="btn-small">View</a>
+                        <button class="btn-small btn-danger">Delete</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="no-data">You haven't created any listings yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

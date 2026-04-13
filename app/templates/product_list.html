@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h2>Browse Available Items</h2>
+        <div class="filters">
+            <a href="{% url 'product_list' %}" class="filter-btn {% if not request.GET.category %}active{% endif %}">All</a>
+            <a href="?category=camera" class="filter-btn {% if request.GET.category == 'camera' %}active{% endif %}">Cameras</a>
+            <a href="?category=laptop" class="filter-btn {% if request.GET.category == 'laptop' %}active{% endif %}">Laptops</a>
+        </div>
+    </div>
+
+    <div class="product-grid">
+        {% for product in products %}
+            <div class="product-card">
+                {% if product.image1 %}
+                    <img src="{{ product.image1.url }}" alt="{{ product.title }}">
+                {% else %}
+                    <div class="no-image">📷 No Image</div>
+                {% endif %}
+                <div class="product-info">
+                    <span class="category-badge">{{ product.get_category_display }}</span>
+                    <h3>{{ product.title }}</h3>
+                    <p class="product-brand">{{ product.brand }} • {{ product.model }}</p>
+                    <p class="product-condition">Condition: {{ product.condition }}</p>
+                    <div class="product-pricing">
+                        <span class="price">₹{{ product.price_per_day }}/day</span>
+                        <h1>  </h1>
+                        <span class="deposit">Deposit: ₹{{ product.security_deposit }}</span>
+                    </div>
+                    <p class="max-days">Max: {{ product.max_lending_days }} days</p>
+                    <a href="{% url 'product_detail' product.pk %}" class="btn-small">View Details</a>
+                </div>
+            </div>
+        {% empty %}
+            <p class="no-results">No products found in this category.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
