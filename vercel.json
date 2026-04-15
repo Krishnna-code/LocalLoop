@@ -1,20 +1,19 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "Borrow/wsgi.py",
-        "use": "@vercel/python"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/static(.*)",
-        "dest": "/static/$1"
-      },
-      {
-        "src": "(.*)",
-        "dest": "borrow/wsgi.py"
-
-      }
-    ]
-  }
+  "version": 2,
+  "builds": [
+    {
+      "src": "Borrow/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "Borrow/wsgi.py"
+    }
+  ]
+}
