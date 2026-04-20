@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-30re!63e65wbq@vog^vu$zlgk1$y_m02bce9egg3qp#gv%=h1+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG =  False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['local-lo0p.vercel.app', '.vercel.app']
 
 
 # Application definition
@@ -122,8 +122,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'app/static'),
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-WHITENOISE_MANIFEST_STRICT = False
+'''STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+WHITENOISE_MANIFEST_STRICT = False '''
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
