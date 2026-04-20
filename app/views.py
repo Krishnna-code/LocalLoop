@@ -7,7 +7,10 @@ from .models import Product, UserProfile, Booking
 from .forms import RegisterForm, ProductForm
 
 def home(request):
-    products = Product.objects.filter(is_available=True).order_by('-created_at')[:6]
+    try:
+        products = Product.objects.filter(is_available=True).order_by('-created_at')[:6]
+    except:
+        products = []
     return render(request, 'home.html', {'products': products})
 
 def register_view(request):
