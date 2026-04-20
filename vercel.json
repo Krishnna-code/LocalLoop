@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "Borrow/Borrow/wsgi.py",
+      "src": "Borrow/wsgi.py",
       "use": "@vercel/python"
     }
   ],
@@ -13,7 +13,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "Borrow/Borrow/wsgi.py"
+      "dest": "Borrow/wsgi.py"
     }
   ]
 }
